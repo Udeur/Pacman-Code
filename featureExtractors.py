@@ -12,6 +12,9 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
+#Berkeley Features:
+# closeToFood, closeToScaredGhost, closeToGhost, score, closeToPellet, bias, numScaredGhosts
+
 "Feature extractors for Pacman game states"
 
 from game import Directions, Actions
