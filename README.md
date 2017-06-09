@@ -10,6 +10,8 @@ https://github.com/tcstewar/ccmsuite
 
 https://github.com/aikorea/awesome-rl
 
+Google Deep Learning Ressourcen:
+
 
 TensorFlow and Deep Learning without a PhD, Part 1
 https://www.youtube.com/watch?v=u4alGiomYP4
