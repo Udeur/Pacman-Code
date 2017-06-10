@@ -104,3 +104,53 @@ class SimpleExtractor(FeatureExtractor):
             features["closest-food"] = float(dist) / (walls.width * walls.height)
         features.divideAll(10.0)
         return features
+    
+class BetterExtractor:
+    
+    def getFeatures(self, state, action):
+        pacmanPostion = state.getPacmanPosition()
+        capsules = state.getCapsules()
+        distanceCapsule = DistanceToCapsule(pacmanPostion, capsules)
+        food = state.getFood()
+        walls = state.getWalls()
+        ghosts = state.getGhostPositions()
+        ghostStates = state.getGhostStates()
+        capsules = state.getCapsules()
+        distanceToGhost = DistancToGhost(pacmanPostion, ghosts)
+
+        #Location after Pacman takes the action
+        x, y = state.getPacmanPosition()
+        dx, dy = Actions.directionToVector(action)
+        next_x, next_y = int(x + dx), int(y + dy)
+        distanceFood = closestFood((next_x, next_y), food, walls)
+        
+        features = util.Counter()
+        
+        features["Bias"] = 1.0
+
+        for ghost in ghostStates:
+            if ghost.scaredTimer > 0:
+                features["DistanceToGhost"] = float (distanceToGhost) / (walls.width * walls.height)
+                features["ScaredGhost1StepAway"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+                if food[next_x][next_y]:
+                     features["food"] = 1.0
+                if distanceFood is not None:
+                     features["ClosestFood"] = float(distanceFood) / (walls.width * walls.height)
+            else:
+                features["Ghost1StepAway"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+
+                if distanceCapsule is not None:
+                    features["DistanceToCapsule"] = 1.0 / (float (distanceCapsule))
+                
+                if not features["Ghost1StepAway"] and food[next_x][next_y]:
+                    features["Food"] = 1.0
+                
+                if distanceFood is not None:
+                    features["ClosestFood"] = float(distanceFood) / (walls.width * walls.height)
+
+                if len(PacmanRules.getLegalActions(state)) < 4:
+                    features["Tunnel"] =  1.0
+
+        features.divideAll(10.0)
+        return features
+
