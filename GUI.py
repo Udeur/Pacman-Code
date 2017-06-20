@@ -55,7 +55,9 @@ def runPacman():
     # Get Agent
     agentchoice = "-p " + str(agent.get())
 
-    running = "python pacman.py " + quiet + " " + train + " " + grids + " " + games + " " + agentchoice
+    #Get Extractor
+    extractorchoice = "-a " + "extractor=" + str(extractor.get())
+    running = "python pacman.py " + quiet + " " + train + " " + grids + " " + games + " " + agentchoice + " "+ extractorchoice
     print(running)
     try:
         os.system(running)
@@ -122,10 +124,22 @@ agentHeading.set("Choose the Agent to run the game with (default is keyboard):")
 AgentLabel = Label(app, textvariable=agentHeading)
 
 # Agent Choice
-agents = ('KeyboardAgent', 'add', 'more', 'agents')
+agents = ('KeyboardAgent', 'ApproximateQAgent')
 
 agent = Combobox(app, values=agents)
 agent.set("KeyboardAgent")
+
+# Heading Extractor
+extrHeading = StringVar()
+extrHeading.set("Choose the Extractor to run the game with (default is IdentityExtractor):")
+ExtrLabel = Label(app, textvariable=extrHeading)
+
+# Agent Choice
+extractors = ('IdentityExtractor', 'CoordinateExtractor', 'BetterExtractor', 'BestExtractor')
+
+extractor = Combobox(app, values=extractors)
+extractor.set("IdentityExtractor")
+
 
 # Start the App
 StartButton = Button(app, text="Start Pac-Man", command=runPacman)
@@ -139,5 +153,7 @@ evalRoundsLabel.pack()
 evaluation.pack()
 AgentLabel.pack()
 agent.pack()
+ExtrLabel.pack()
+extractor.pack()
 StartButton.pack(side='bottom')
 app.mainloop()
