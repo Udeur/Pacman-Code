@@ -18,7 +18,11 @@
 "Feature extractors for Pacman game states"
 
 from game import Directions, Actions
+from util import manhattanDistance
+from pacman import PacmanRules
 import util
+import heapq
+import numpy as np
 
 class FeatureExtractor:
     def getFeatures(self, state, action):
@@ -66,6 +70,16 @@ def closestFood(pos, food, walls):
     # no food found
     return None
 
+def DistanceToCapsule(pos, capsules):
+    for c in capsules:
+        distance = [manhattanDistance(pos, c)]
+        return min(distance)
+
+def DistancToGhost(pos, ghosts):
+    for g in ghosts:
+        distance = [manhattanDistance(pos, g)]
+        return min(distance)
+
 class SimpleExtractor(FeatureExtractor):
     """
     Returns simple features for a basic reflex Pacman:
@@ -104,7 +118,8 @@ class SimpleExtractor(FeatureExtractor):
             features["closest-food"] = float(dist) / (walls.width * walls.height)
         features.divideAll(10.0)
         return features
-    
+
+#added fjohn
 class BetterExtractor:
     
     def getFeatures(self, state, action):
@@ -154,6 +169,7 @@ class BetterExtractor:
         features.divideAll(10.0)
         return features
 
+#added fjohn
 class BestExtractor(FeatureExtractor):
   
     def getFeatures(self, state, action):
