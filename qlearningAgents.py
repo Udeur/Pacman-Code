@@ -16,6 +16,7 @@
 from game import *
 from learningAgents import ReinforcementAgent
 from featureExtractors import *
+from importExport import TxtFile
 
 import random,util,math
 
