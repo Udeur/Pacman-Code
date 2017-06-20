@@ -44,7 +44,7 @@ def runPacman():
         tkMessageBox.showinfo("Warning", "Please specify a number of evaluation rounds or put 0 as a default")
         return
 
-    if (QuietMode.get() is not None):
+    if (str(QuietMode.get()) != ""):
         quiet = str(QuietMode.get())
     else:
         quiet = ""
@@ -55,7 +55,14 @@ def runPacman():
     # Get Agent
     agentchoice = "-p " + str(agent.get())
 
-    running = "python pacman.py " + quiet + " " + train + " " + grids + " " + games + " " + agentchoice
+    #Get Extractor
+    if str(extractor.get()) == "No Extractor":
+        extractorchoice = ""
+    else:
+        extractorchoice = "-a " + "extractor=" + str(extractor.get())
+
+    running = "python pacman.py " + extractorchoice + " " + agentchoice + " " + quiet + " " + train + " " + grids +\
+              " " + games + " "
     print(running)
     try:
         os.system(running)
@@ -122,10 +129,22 @@ agentHeading.set("Choose the Agent to run the game with (default is keyboard):")
 AgentLabel = Label(app, textvariable=agentHeading)
 
 # Agent Choice
-agents = ('KeyboardAgent', 'add', 'more', 'agents')
+agents = ('KeyboardAgent', 'ApproximateQAgent', 'PacmanQAgent')
 
 agent = Combobox(app, values=agents)
 agent.set("KeyboardAgent")
+
+# Heading Extractor
+extrHeading = StringVar()
+extrHeading.set("Choose the Extractor to run the game with (default is IdentityExtractor):")
+ExtrLabel = Label(app, textvariable=extrHeading)
+
+# Agent Choice
+extractors = ('IdentityExtractor', 'CoordinateExtractor', 'BetterExtractor', 'BestExtractor', 'No Extractor')
+
+extractor = Combobox(app, values=extractors)
+extractor.set("IdentityExtractor")
+
 
 # Start the App
 StartButton = Button(app, text="Start Pac-Man", command=runPacman)
@@ -139,5 +158,7 @@ evalRoundsLabel.pack()
 evaluation.pack()
 AgentLabel.pack()
 agent.pack()
+ExtrLabel.pack()
+extractor.pack()
 StartButton.pack(side='bottom')
 app.mainloop()
