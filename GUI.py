@@ -4,7 +4,7 @@ from ttk import *
 import inspect
 import os
 
-
+#Version 21.06.2017
 # Just for testing, gives back variable in a pop-up window
 def infoBox():
     QuietMode1 = QuietMode.get()
