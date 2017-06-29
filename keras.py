@@ -18,10 +18,12 @@ class NN():
         width, heigth = state.data.layout.width,state.data.layout.height
         matPacPosition = np.zeros((width, heigth),dtype= int)
         x,y = state.getPacmanPostion()
-        if y < heigth/2:
-            matPacPosition[x, y + heigth - 1] = 1
-        else:
-            matPacPosition[x, y - heigth + 1] = 1
+        for i in range(width):
+            for j in range(heigth):
+                if y < heigth/2:
+                    matPacPosition[x, y + heigth - 1] = 1
+                else:
+                    matPacPosition[x, y - heigth + 1] = 1
 
         #Walls Position
         matWallsPosition = np.zeros((width, heigth),dtype= int)
@@ -30,13 +32,26 @@ class NN():
             for j in range(heigth):
                 if walls[i,j]:
                     if j < heigth/2:
-                        matWallsPosition[i, j + heigth - 1]
+                        matWallsPosition[i, j + heigth - 1] = 1
                     else:
-                        matWallsPosition[i, j - heigth + 1]
+                        matWallsPosition[i, j - heigth + 1] = 1
 
-        #Ghost Position
+        #Ghost Positions:
+        #Comment: Sollen wir die Ghosts noch voneinander unterscheiden (oder ist das dann schon wieder eine High-Level
+        # Info)?
+        matGhostsPosition = np.zeros((width, heigth), dtype=int)
+        ghosts = state.getGhostPositions()
 
-        return
+        for g in ghosts:
+            x,y = g
+            if j < heigth / 2:
+                matGhostsPosition[x, y + heigth - 1] = 1
+            else:
+                matGhostsPosition[x, y - heigth + 1] = 1
+
+
+
+        return matPacPosition, matWallsPosition, matGhostsPosition
 
 
     def _init_(self, state):
