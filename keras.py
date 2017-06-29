@@ -1,5 +1,6 @@
 import numpy as np
 import game
+from game import *
 import pacman
 from util import *
 from keras.models import Sequential
@@ -9,9 +10,35 @@ from keras import optimizers
 from keras import losses
 
 
-
 class NN():
-    
+
+    def dataprep(self, state):
+        # Matrix-Generierung:
+        # Pacman_Position
+        width, heigth = state.data.layout.width,state.data.layout.height
+        matPacPosition = np.zeros((width, heigth),dtype= int)
+        x,y = state.getPacmanPostion()
+        if y < heigth/2:
+            matPacPosition[x, y + heigth - 1] = 1
+        else:
+            matPacPosition[x, y - heigth + 1] = 1
+
+        #Walls Position
+        matWallsPosition = np.zeros((width, heigth),dtype= int)
+        walls = state.getWalls()
+        for i in range(width):
+            for j in range(heigth):
+                if walls[i,j]:
+                    if j < heigth/2:
+                        matWallsPosition[i, j + heigth - 1]
+                    else:
+                        matWallsPosition[i, j - heigth + 1]
+
+        #Ghost Position
+
+        return
+
+
     def _init_(self, state):
          width, height = state.data.layout.width, state.data.layout.height
          self.action.size = 4;  #5 
