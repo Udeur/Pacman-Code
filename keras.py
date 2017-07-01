@@ -15,40 +15,29 @@ class NN():
     def dataprep(self, state):
         # Matrix-Generierung:
         # Pacman_Position
-        width, heigth = state.data.layout.width,state.data.layout.height
-        matPacPosition = np.zeros((width, heigth),dtype= int)
+        width, height = state.data.layout.width,state.data.layout.height
+        matPacPosition = np.zeros((width, height),dtype= int)
         x,y = state.getPacmanPostion()
-        for i in range(width):
-            for j in range(heigth):
-                if y < heigth/2:
-                    matPacPosition[x, y + heigth - 1] = 1
-                else:
-                    matPacPosition[x, y - heigth + 1] = 1
+        matPacPosition[height - 1 - y,x] = 1
+
 
         #Walls Position
-        matWallsPosition = np.zeros((width, heigth),dtype= int)
+        matWallsPosition = np.zeros((width, height),dtype= int)
         walls = state.getWalls()
         for i in range(width):
-            for j in range(heigth):
+            for j in range(height):
                 if walls[i,j]:
-                    if j < heigth/2:
-                        matWallsPosition[i, j + heigth - 1] = 1
-                    else:
-                        matWallsPosition[i, j - heigth + 1] = 1
+                    matWallsPosition[height -1 - j,i] = 1
 
         #Ghost Positions:
         #Comment: Sollen wir die Ghosts noch voneinander unterscheiden (oder ist das dann schon wieder eine High-Level
         # Info)?
-        matGhostsPosition = np.zeros((width, heigth), dtype=int)
+        matGhostsPosition = np.zeros((width, height), dtype=int)
         ghosts = state.getGhostPositions()
 
         for g in ghosts:
             x,y = g
-            if j < heigth / 2:
-                matGhostsPosition[x, y + heigth - 1] = 1
-            else:
-                matGhostsPosition[x, y - heigth + 1] = 1
-
+            matGhostsPosition[height - y - 1, x] = 1
 
 
         return matPacPosition, matWallsPosition, matGhostsPosition
