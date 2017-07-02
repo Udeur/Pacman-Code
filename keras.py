@@ -27,16 +27,6 @@ class NN():
         model.add(Dense(4, activation ='linear'))
         model.compile(loss='mean_squared_error', optimizer='RMSprop',metrics=['accuracy'])
         
-      
+    def trainFromBatch():
         
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done))
-     
-    #Beispielcode   
-    def act(self, state):
-        if np.random.rand() <= self.epsilon:
-            return random.randrange(self.action_size)
-        act_values = self.model.predict(state)
-        return np.argmax(act_values[0])  # returns action
-    
-    def replay(self, batch_size):
+    def Save(self):
