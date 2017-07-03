@@ -129,7 +129,7 @@ agentHeading.set("Choose the Agent to run the game with (default is keyboard):")
 AgentLabel = Label(app, textvariable=agentHeading)
 
 # Agent Choice
-agents = ('KeyboardAgent', 'ApproximateQAgent', 'PacmanQAgent', 'DeepqlearningAgent')
+agents = ('KeyboardAgent', 'ApproximateQAgent', 'PacmanQAgent', 'DQLAgent')
 
 agent = Combobox(app, values=agents)
 agent.set("KeyboardAgent")
