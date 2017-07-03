@@ -18,7 +18,7 @@ def getPath():
     path = inspect.getfile((inspect.currentframe()))
     return path
 
-
+#
 # run pacmany.py with given parameters
 
 def runPacman():
