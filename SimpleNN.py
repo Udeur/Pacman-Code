@@ -2,6 +2,7 @@ import random
 import gym
 import numpy as np
 from collections import deque
+from featureExtractors import BestExtractor
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
@@ -74,7 +75,7 @@ class DQNAgent:
 
 
 if __name__ == "__main__":
-    env = #Hier Featurevektor einfügen
+    env = getFeature
     state_size = # feature.length
     action_size = 5
     agent = DQNAgent(state_size, action_size)
