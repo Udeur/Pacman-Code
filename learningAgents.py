@@ -13,6 +13,7 @@
 
 
 from game import Directions, Agent, Actions
+import xlsxwriter
 
 import random,util,time
 
@@ -233,16 +234,26 @@ class ReinforcementAgent(ValueEstimationAgent):
             self.lastWindowAccumRewards = 0.0
         self.lastWindowAccumRewards += state.getScore()
 
-        NUM_EPS_UPDATE = 100
+
+
+
+
+        NUM_EPS_UPDATE = 50
+
         if self.episodesSoFar % NUM_EPS_UPDATE == 0:
+           # workbook = xlsxwriter.Workbook("test.xlsx")
+            #worksheet = workbook.add_worksheet()
+            #worksheet.write('A1', 'Test')
+            #worksheet.write('A2', 'Completed')
+
             print 'Reinforcement Learning Status:'
             windowAvg = self.lastWindowAccumRewards / float(NUM_EPS_UPDATE)
             if self.episodesSoFar <= self.numTraining:
                 trainAvg = self.accumTrainRewards / float(self.episodesSoFar)
-                print '\tCompleted %d out of %d training episodes' % (
-                       self.episodesSoFar,self.numTraining)
-                print '\tAverage Rewards over all training: %.2f' % (
-                        trainAvg)
+                file.write( '\tCompleted %d out of %d training episodes' % (
+                       self.episodesSoFar,self.numTraining))
+                file.write( '\tAverage Rewards over all training: %.2f' % (
+                        trainAvg))
             else:
                 testAvg = float(self.accumTestRewards) / (self.episodesSoFar - self.numTraining)
                 print '\tCompleted %d test episodes' % (self.episodesSoFar - self.numTraining)
@@ -252,7 +263,10 @@ class ReinforcementAgent(ValueEstimationAgent):
             print '\tEpisode took %.2f seconds' % (time.time() - self.episodeStartTime)
             self.lastWindowAccumRewards = 0.0
             self.episodeStartTime = time.time()
+            workbook.close()
 
         if self.episodesSoFar == self.numTraining:
             msg = 'Training Done (turning off epsilon and alpha)'
             print '%s\n%s' % (msg,'-' * len(msg))
+
+

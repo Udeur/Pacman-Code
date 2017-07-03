@@ -54,9 +54,9 @@ class PacmanDQN(game.Agent):
 
         # Load parameters from user-given arguments
         self.params = params
-        self.params['width'] = 20 #args['width']
-        self.params['height'] = 20 #args['height']
-        self.params['numTraining'] = 100
+        self.params['width'] = args['width']
+        self.params['height'] = args['height']
+        self.params['num_training'] = args["numTraining"]
 
         # Start Tensorflow session
 
