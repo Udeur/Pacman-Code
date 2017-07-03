@@ -215,25 +215,25 @@ class ApproximateQAgent(PacmanQAgent):
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
 
-            "Exportieren"
-           # self.file.emptyFile()
-            for key in self.weights.keys():
-                self.file.writeToFile(str(self.weights[key]) + '|')
-                state = key[0]
-                self.file.writeToFile(str(state.data.food) + '|')
-                self.file.writeToFile(str(state.data.capsules) + '|')
-                agentStates = state.data.agentStates
-                for agentState in agentStates:
-                    self.file.writeToFile(str(agentState.start) + '!')
-                    self.file.writeToFile(str(agentState.configuration) + '!')
-                    self.file.writeToFile(str(agentState.isPacman) + '!')
-                    self.file.writeToFile(str(agentState.scaredTimer) + '!')
-                    self.file.writeToFile(str(agentState.numCarrying) + '!')
-                    self.file.writeToFile(str(agentState.numReturned) + '!')
-                    self.file.writeToFile('&')
-                self.file.writeToFile(str(state.data.layout) + '|')
-                self.file.writeToFile(str(state.data._eaten) + '|')
-                self.file.writeToFile(str(state.data.score) + '|')
-                self.file.writeToFile(str(key[1]) + '|')
-                self.file.writeToFile("?")
-            pass
+         #   "Exportieren"
+         #  # self.file.emptyFile()
+         #   for key in self.weights.keys():
+         #       self.file.writeToFile(str(self.weights[key]) + '|
+         #      state = key[0]
+         #     self.file.writeToFile(str(state.data.food) + '|')
+         #     self.file.writeToFile(str(state.data.capsules) + '|')
+         #       agentStates = state.data.agentStates
+         #       for agentState in agentStates:
+         #           self.file.writeToFile(str(agentState.start) + '!')
+         #           self.file.writeToFile(str(agentState.configuration) + '!')
+         #           self.file.writeToFile(str(agentState.isPacman) + '!')
+         #           self.file.writeToFile(str(agentState.scaredTimer) + '!')
+         #           self.file.writeToFile(str(agentState.numCarrying) + '!')
+         #           self.file.writeToFile(str(agentState.numReturned) + '!')
+         #           self.file.writeToFile('&')
+         #       self.file.writeToFile(str(state.data.layout) + '|')
+         #       self.file.writeToFile(str(state.data._eaten) + '|')
+         #       self.file.writeToFile(str(state.data.score) + '|')
+         #       self.file.writeToFile(str(key[1]) + '|')
+         #       self.file.writeToFile("?")
+         #   pass
