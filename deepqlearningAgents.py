@@ -13,7 +13,6 @@ import time
 #from pacman import *
 
 from game import Directions, Actions
-from pacman import PacmanRules
 import game
 from game import Agent
 from util import manhattanDistance
@@ -287,50 +286,37 @@ class deepqlearningAgents(game.Agent):
         matrix = np.zeros(dtype= float, shape = (10,1))
 
         bias = 1.0
+        matrix[0] = bias
 
         if food[x][y]:
             food = 1.0
+            matrix[1] = food
        
         if distanceFood is not None:
             distanceToFood = float(distanceFood) / (walls.width * walls.height)
+            matrix[2] = distanceToFood
 
         if len(scared_ghosts) > 0:
             distanceToClosestScaredGhost =float (min([manhattanDistance(pacmanPostion, g.getPosition()) for g in scared_ghosts]) / (walls.width * walls.height))
-            matrix[2] = distanceToClosestScaredGhost
+            matrix[3] = distanceToClosestScaredGhost
             scaredGhost1StepAway = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-            matrix[3] = scaredGhost1StepAway
+            matrix[4] = scaredGhost1StepAway
             
-        if len(normal_ghosts) > 0:
-            
+        if len(normal_ghosts) > 0: 
             distanceToClosestGhost = float (min([manhattanDistance(pacmanPostion, g.getPosition()) for g in normal_ghosts]) / (walls.width * walls.height))
-            matrix[4] = distanceToClosestGhost
+            matrix[5] = distanceToClosestGhost
             ghost1StepAway = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-            matrix[5] = ghost1StepAway
+            matrix[6] = ghost1StepAway
           
             if len(normal_ghosts) > 1:
                 distanceToSecondClosestGhost = float (heapq.nsmallest(2, [manhattanDistance(pacmanPostion, g.getPosition()) for g in normal_ghosts])[-1] / (walls.width * walls.height))
-                matrix[6] = distanceToSecondClosestGhost
+                matrix[7] = distanceToSecondClosestGhost
             if distanceCapsule is not None:
                 DistanceToCapsule = float (distanceCapsule) / ((walls.width * walls.height)^2)
-                matrix[7] = DistanceToCapsule
-
-            if len(PacmanRules.getLegalActions(state)) < 4:
+                matrix[8] = DistanceToCapsule
+            if len(state.getLegalActions()) < 4:
                 tunnel = 1.0
-                matrix[8] = tunnel
-    
-
-        matrix = np.zeros(dtype= float, shape = (10,1))
-       
-        #matrix[0] = food
-        matrix[1] = distanceToFood
-        #matrix[2] = distanceToClosestScaredGhost
-        #matrix[3] = scaredGhost1StepAway
-        #matrix[4] = distanceToClosestGhost
-        #matrix[5] = ghost1StepAway
-        #matrix[6] = distanceToSecondClosestGhost
-        #matrix[7] = DistanceToCapsule
-        #matrix[8] = tunnel
-        matrix[9] = bias
+                matrix[9] = tunnel
 
         return matrix 
 
@@ -367,9 +353,5 @@ class deepqlearningAgents(game.Agent):
         legal = state.getLegalActions(0)
         if move not in legal:
             move = Directions.STOP
-
         return move
-
-
-    test
   
