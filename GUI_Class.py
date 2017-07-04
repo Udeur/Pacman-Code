@@ -13,7 +13,6 @@ import random
 class MainWindow:
     counter = 0
 
-
     def __init__(self):
         global photo
         self.root = Tk()
@@ -24,7 +23,12 @@ class MainWindow:
         self.layout = StringVar()
         self.training = IntVar()
         self.evaluation = IntVar()
-        self.quiet = IntVar()
+        self.quiet = StringVar()
+
+        self.tup_agents = ('KeyboardAgent', 'ApproximateQAgent', 'PacmanQAgent', 'DQLAgent')
+        self.tup_layout = ('capsuleClassic', 'contestClassic', 'mediumClassic', 'mediumGrid', 'minimaxClassic', 'openClassic', \
+                   'originalClassic', 'smallClassic', 'smallGrid', 'testClassic', 'trappedClassic', 'trickyClassic')
+        self.tup_extractor = ('IdentityExtractor', 'CoordinateExtractor', 'BetterExtractor', 'BestExtractor', 'No Extractor')
 
         name = "/GUI_pic/pacman_keyboard.png"
         path_pic = os.path.dirname(os.path.realpath(__file__))
@@ -73,17 +77,16 @@ class MainWindow:
     def createCombo(self):
     #Agents
         agents = Combobox(self.root, textvariable=self.agent)
-        agents['values'] = ('KeyboardAgent', 'ApproximateQAgent', 'PacmanQAgent', 'DQLAgent')
+        agents['values'] = self.tup_agents
         agents.set('KeyboardAgent')
         agents.bind("<<ComboboxSelected>>", self.agentchanged)
     #Extractors
         extractors = Combobox(self.root, values=self.extractor)
-        extractors['values'] = ('IdentityExtractor', 'CoordinateExtractor', 'BetterExtractor', 'BestExtractor', 'No Extractor')
+        extractors['values'] = self.tup_extractor
         self.extractor.set("IdentityExtractor")
     #Layouts
         layouts = Combobox(self.root, values=self.layout)
-        layouts['values'] = ('capsuleClassic', 'contestClassic', 'mediumClassic', 'mediumGrid', 'minimaxClassic', 'openClassic', \
-                   'originalClassic', 'smallClassic', 'smallGrid', 'testClassic', 'trappedClassic', 'trickyClassic')
+        layouts['values'] = self.tup_layout
         self.layout.set("mediumClassic")
 
         self.list[0] = (self.list[0], agents)
@@ -111,7 +114,7 @@ class MainWindow:
         return None
 
     def createButtons(self, index):
-        StartButton = Button(self.root, text="Start Pac-Man")
+        StartButton = Button(self.root, text="Start Pac-Man", command=self.clickStart)
         StartButton.grid(row=index + 1, column=8, padx=20, pady=20)
         return None
 
@@ -141,6 +144,20 @@ class MainWindow:
         self.lbl_pic.configure(image=self.photo)
         self.lbl_pic.image = self.photo
 
+    def intputsAreValid(self):
+        str = ''
+
+        if not self.agent.get() in self.tup_agents: str += 'Selected agent is not valid \n'
+        if self.agent.get() != 'KeyboardAgent':
+            if not self.extractor.get() in self.tup_extractor: str += 'Selected extractor is not valid \n'
+            if type(self.training.get()) == 'int' or self.training.get() < 0: str += 'Training must be a positive Integer \n'
+            if type(self.evaluation.get()) == 'int' or self.evaluation.get() < 1: str += 'Evaluation must be a Integer greater 1 \n'
+        if not self.layout.get() in self.tup_layout: str += 'Selected layout is not valid \n'
+        if len(str) == 0:
+            return True
+        else:
+            tkMessageBox.showinfo("Invalid Parameters", str)
+            return  False
 
 #Events
     def agentchanged(self, event):
@@ -148,6 +165,32 @@ class MainWindow:
             self.setPicture(0)
         else:
             self.setPicture(1)
+
+    def clickStart(self):
+
+        if self.intputsAreValid():
+            list = []
+
+            if self.agent.get() != 'KeyboardAgent':
+                list.append(" -n " + str(self.training.get() + self.evaluation.get()))
+                list.append(self.quiet.get())
+                list.append(" -l " + self.layout.get())
+                list.append(" -p " + self.agent.get())
+                list.append(" -x " + str(self.training.get()))
+                if self.extractor != 'NoExtractor': list.append("-a " + "extractor=" + self.extractor.get())
+
+            options = ''
+            for  i in list:
+                options += i
+            running = "python pacman.py" + options
+
+            print options
+
+            try:
+               os.system(running)
+            except:
+               print 'No'
+
 
 if __name__ == '__main__':
     app = MainWindow()
