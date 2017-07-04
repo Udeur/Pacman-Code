@@ -2,10 +2,8 @@ from Tkinter import *
 from ttk import *
 from PIL import Image, ImageTk
 import tkMessageBox
-import inspect
 import os
-import random
-
+import webbrowser
 
 #Version 21.06.2017
 
@@ -47,6 +45,7 @@ class MainWindow:
         style.configure("TCheckbutton", background=bg, foreground=fg)
         style.configure("TEntry", background=bg, foreground=fg, borderwidth=1, fieldbackground=bg, borderthickness=0)
         style.configure("TButton", relief='raised', background='#ece74d', foreground=bg)
+        style.configure("TMenu", background=bg, foreground=fg)
         return None
 
     def createElements(self):
@@ -118,6 +117,13 @@ class MainWindow:
         StartButton.grid(row=index + 1, column=8, padx=20, pady=20)
         return None
 
+    def createMenu(self):
+        menu = Menu(self.root)
+        self.root.config(menu=menu)
+        menu.add_command(label="Credits", command=self.showCredits)
+        menu.config(bg='black', fg='green')
+
+
     def orderElements(self):
         i = 0
         padding = 4
@@ -129,6 +135,7 @@ class MainWindow:
             item[1].grid(row=i, column=2, sticky=W, pady=padding)
             i += 1
         self.createButtons(i)
+        self.createMenu()
         return None
 
     def loadimage(self):
@@ -177,7 +184,7 @@ class MainWindow:
                 list.append(" -l " + self.layout.get())
                 list.append(" -p " + self.agent.get())
                 list.append(" -x " + str(self.training.get()))
-                if self.extractor != 'NoExtractor': list.append("-a " + "extractor=" + self.extractor.get())
+                if self.extractor != 'NoExtractor': list.append(" -a " + "extractor=" + self.extractor.get())
 
             options = ''
             for  i in list:
@@ -191,6 +198,60 @@ class MainWindow:
             except:
                print 'No'
 
+    def showCredits(self):
+        credit = Credits()
+        credit.show()
+
+
+class Credits:
+
+    def __init__(self):
+        self.root = Tk()
+        self.root.title('Credits')
+        self.configureStyle()
+        self.createLabels()
+        self.orderLabels()
+
+    def createLabels(self):
+        self.lbl_created = Label(self.root, text='Created by:\n\tFleiner, Christian  \n\tGoergen, Konstantin  \n\tJohn, Felix \n\tPickl, Max ' )
+        self.lbl_created.configure(background='black', foreground='green')
+
+        self.lbl_opening = Label(self.root, text='Thanks to all Contributors\nof knowledge and source code')
+        self.lbl_opening.configure(background='black', foreground='green')
+
+        self.lbl_bk = HyperlinkLabel(self.root, "UC Berkeley CS188 Intro to AI")
+        self.lbl_bk.setLink(r"http://ai.berkeley.edu/home.html")
+
+        self.lbl_aifb = HyperlinkLabel(self.root, "Institut AIFB des KIT")
+        self.lbl_aifb.setLink("http://www.aifb.kit.edu/web/Hauptseite")
+
+    def configureStyle(self):
+        self.root.configure(background='black')
+        style = Style()
+        style.configure("TLabel", background='black', foreground='green')
+
+    def orderLabels(self):
+        self.lbl_created.grid(row=1, padx=5, pady = 10)
+        self.lbl_opening.grid(row=2, padx=5, pady = 10)
+        self.lbl_bk.label.grid(row=3, padx=5)
+        self.lbl_aifb.label.grid(row=4, padx=5)
+
+    def show(self):
+        self.root.mainloop()
+
+class HyperlinkLabel:
+    link = ''
+
+    def __init__(self, root, text):
+        self.label = Label(root, text=text, cursor='hand2')
+        self.label.configure(background='black', foreground='blue')
+        self.label.bind("<Button-1>", self.openLink)
+
+    def setLink(self,str):
+        self.link = str
+
+    def openLink(self, event):
+        webbrowser.open_new(self.link)
 
 if __name__ == '__main__':
     app = MainWindow()
