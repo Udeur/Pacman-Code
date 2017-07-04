@@ -278,6 +278,7 @@ class deepqlearningAgents(game.Agent):
         
         actions = state.getLegalActions()
         x, y = state.getPacmanPosition()
+        print Actions.directionToVector(actions[0])
         
         #Matrizen generieren
         matrix = np.zeros(dtype= float, shape = (10,5))
@@ -288,6 +289,7 @@ class deepqlearningAgents(game.Agent):
 
         x1, y1 = Actions.directionToVector(actions[0])
         next_x1, next_y1 = int(x + x1), int(y + y1)
+        print next_x1, next_y1
         if food[next_x1][next_y1]:
             foodMatrix[0] = 1.0
         distanceFood = self.closestFood((next_x1, next_y1), food, walls)
@@ -347,7 +349,7 @@ class deepqlearningAgents(game.Agent):
             if distanceFood is not None:
                 distanceToClosestFoodMatrix[4] = float(distanceFood) / (walls.width * walls.height)
             if len(scared_ghosts) > 0:
-                scaredGhost1StepAwayMatrix[4] = sum((next_x4, next_y4) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+                scaredGhost1StepAwayMatrix[4] = sum((next_x5, next_y5) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
             if len(normal_ghosts) > 0:
                  ghost1StepAwayMatrix[4] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)    
 
