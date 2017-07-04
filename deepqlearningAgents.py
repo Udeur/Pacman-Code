@@ -11,7 +11,8 @@ import time
 # Pacman game
 #from pacman import Directions
 #from pacman import *
-from pacman import Directions
+
+from game import Directions, Actions
 import game
 from game import Agent
 from util import manhattanDistance
@@ -27,16 +28,17 @@ from collections import deque
 
 # Neural nets
 import tensorflow as tf
-from NN import *
+from DeepQ import *
+
 
 params = {
     # Model backups
     'load_file': None,
     'save_file': None,
-    'save_interval' : 10000, 
+    'save_interval' : 100,
 
     # Training parameters
-    'train_start': 5000,    # Episodes before training starts
+    'train_start': 500,    # Episodes before training starts
     'batch_size': 32,       # Replay memory batch size
     'mem_size': 100000,     # Replay memory size
 
@@ -52,7 +54,7 @@ params = {
 }                     
 
 
-class deepqlearningAgent(game.Agent):
+class deepqlearningAgents(game.Agent):
     def __init__(self, args):
 
         print("Initialise DQN Agent")
@@ -61,7 +63,7 @@ class deepqlearningAgent(game.Agent):
         self.params = params
         self.params['num_training'] = args['numTraining']
 
-        self.qnet = NN(self.params)
+        self.qnet = DQN(self.params)
 
         # Q and cost
         self.Q_global = []
@@ -85,12 +87,12 @@ class deepqlearningAgent(game.Agent):
         if np.random.rand() > self.params['eps']:
             # Exploit action
             self.Q_pred = self.qnet.sess.run(
-                self.qnet.y,
+                self.qnet.y3,
 
-                # Hier Änderungen!!
-                feed_dict = {self.qnet.x: np.reshape(self.current_state, (10, 1)), 
+
+                feed_dict = {self.qnet.x: np.reshape(self.current_state, (1,10, 5)),
                              self.qnet.q_t: np.zeros(1),
-                             self.qnet.actions: np.zeros((1, 4)),
+                             self.qnet.actions: np.zeros((1, 5)),
                              self.qnet.terminals: np.zeros(1),
                              self.qnet.rewards: np.zeros(1)})[0]
 
@@ -137,7 +139,7 @@ class deepqlearningAgent(game.Agent):
             # Process current experience state
             self.last_state = np.copy(self.current_state)
 
-            self.current_state = self.getStateFeatureMatrix(state)
+            self.current_state = self.getStatesFeatureMatrix(state)
 
             # Process current experience reward
             self.current_score = state.getScore()
@@ -232,12 +234,12 @@ class deepqlearningAgent(game.Agent):
 
     def get_onehot(self, actions):
         """ Create list of vectors with 1 values at index of action in list """
-        actions_onehot = np.zeros((self.params['batch_size'], 4))
+        actions_onehot = np.zeros((self.params['batch_size'], 5))
         for i in range(len(actions)):                                           
             actions_onehot[i][int(actions[i])] = 1      
         return actions_onehot   
 
-    def closestFood(pos, food, walls):
+    def closestFood(self, pos, food, walls):
    
         fringe = [(pos[0], pos[1], 0)]
         expanded = set()
@@ -256,15 +258,15 @@ class deepqlearningAgent(game.Agent):
         # no food found
         return None
 
-    def DistanceToCapsule(pos, capsules):
+    def distanceToCapsule(self, pos, capsules):
         for c in capsules:
             distance = [manhattanDistance(pos, c)]
             return min(distance)
 
-    def getStateFeatureMatrix(self, state):
+    def getStatesFeatureMatrix(self, state):
         pacmanPostion = state.getPacmanPosition()
         capsules = state.getCapsules()
-        distanceCapsule = DistanceToCapsule(pacmanPostion, capsules)
+        distanceCapsule = self.distanceToCapsule(pacmanPostion, capsules)
         food = state.getFood()
         walls = state.getWalls()
         ghosts = state.getGhostPositions()
@@ -273,54 +275,110 @@ class deepqlearningAgent(game.Agent):
         #Unterteile die Geister 
         scared_ghosts = filter(lambda g: g.scaredTimer > 0, ghostStates)
         normal_ghosts = filter(lambda g: g.scaredTimer == 0, ghostStates)
-
+        
+        actions = state.getLegalActions()
         x, y = state.getPacmanPosition()
-        dx, dy = Actions.directionToVector(getMove(state))
-        next_x, next_y = int(x + dx), int(y + dy)
-        distanceFood = closestFood((next_x, next_y), food, walls)
+        
+        #Matrizen generieren
+        matrix = np.zeros(dtype= float, shape = (10,5))
+        foodMatrix = np.zeros(dtype= float, shape = 5)
+        distanceToClosestFoodMatrix = np.zeros(dtype= float, shape = 5)
+        scaredGhost1StepAwayMatrix = np.zeros(dtype= float, shape = 5)
+        ghost1StepAwayMatrix = np.zeros(dtype= float, shape = 5)
 
-        bias = 1.0
-
-        if food[next_x][next_y]:
-            food = 1.0
-       
+        x1, y1 = Actions.directionToVector(actions[0])
+        next_x1, next_y1 = int(x + x1), int(y + y1)
+        if food[next_x1][next_y1]:
+            foodMatrix[0] = 1.0
+        distanceFood = self.closestFood((next_x1, next_y1), food, walls)
         if distanceFood is not None:
-            distanceToFood = float(distanceFood) / (walls.width * walls.height)
-
+            distanceToClosestFoodMatrix[0] = float(distanceFood) / (walls.width * walls.height)
         if len(scared_ghosts) > 0:
-            distanceToClostestScaredGhost =float (min([manhattanDistance(pacmanPostion, g.getPosition()) for g in scared_ghosts]) / (walls.width * walls.height))
-            scaredGhost1StepAway = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-            
+                scaredGhost1StepAwayMatrix[0] = sum((next_x1, next_y1) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+        if len(normal_ghosts) > 0:
+             ghost1StepAwayMatrix[0] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)           
+          
+        if len(actions) > 1:
+            x2, y2 = Actions.directionToVector(actions[1])
+            next_x2, next_y2 = int(x + x2), int(y + y2)
+            if food[next_x2][next_y2]:
+                foodMatrix[1] = 1.0
+            distanceFood = self.closestFood((next_x2, next_y2), food, walls)
+            if distanceFood is not None:
+                distanceToClosestFoodMatrix[1] = float(distanceFood) / (walls.width * walls.height)
+            if len(scared_ghosts) > 0:
+                scaredGhost1StepAwayMatrix[1] = sum((next_x2, next_y2) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+            if len(normal_ghosts) > 0:
+             ghost1StepAwayMatrix[1] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)    
+
+        if len(actions) > 2:
+            x3, y3 = Actions.directionToVector(actions[2])
+            next_x3, next_y3 = int(x + x3), int(y + y3) 
+            if food[next_x3][next_y3]:
+                foodMatrix[2] = 1.0
+            distanceFood = self.closestFood((next_x3, next_y3), food, walls)
+            if distanceFood is not None:
+                distanceToClosestFoodMatrix[2] = float(distanceFood) / (walls.width * walls.height)
+            if len(scared_ghosts) > 0:
+                scaredGhost1StepAwayMatrix[2] = sum((next_x3, next_y3) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+            if len(normal_ghosts) > 0:
+                ghost1StepAwayMatrix[2] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)    
+
+        if len(actions) > 3:
+            x4, y4 = Actions.directionToVector(actions[3])
+            next_x4, next_y4 = int(x + x4), int(y + y4)
+            if food[next_x4][next_y4]:
+                foodMatrix[3] = 1.0
+            distanceFood = self.closestFood((next_x4, next_y4), food, walls)
+            if distanceFood is not None:
+                distanceToClosestFoodMatrix[3] = float(distanceFood) / (walls.width * walls.height)
+            if len(scared_ghosts) > 0:
+                scaredGhost1StepAwayMatrix[3] = sum((next_x4, next_y4) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+            if len(normal_ghosts) > 0:
+                ghost1StepAwayMatrix[3] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)    
+
+
+        if len(actions) > 4:
+            x5, y5 = Actions.directionToVector(actions[4])
+            next_x5, next_y5 = int(x + x5), int(y + y5)
+            if food[next_x5][next_y5]:
+                foodMatrix[4] = 1.0
+            distanceFood = self.closestFood((next_x5, next_y5), food, walls)
+            if distanceFood is not None:
+                distanceToClosestFoodMatrix[4] = float(distanceFood) / (walls.width * walls.height)
+            if len(scared_ghosts) > 0:
+                scaredGhost1StepAwayMatrix[4] = sum((next_x4, next_y4) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+            if len(normal_ghosts) > 0:
+                 ghost1StepAwayMatrix[4] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)    
+
         if len(normal_ghosts) > 0:
             
             distanceToClosestGhost = float (min([manhattanDistance(pacmanPostion, g.getPosition()) for g in normal_ghosts]) / (walls.width * walls.height))
-            ghost1StepAway = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-          
+            matrix[0] = distanceToClosestGhost
+            
             if len(normal_ghosts) > 1:
                 distanceToSecondClosestGhost = float (heapq.nsmallest(2, [manhattanDistance(pacmanPostion, g.getPosition()) for g in normal_ghosts])[-1] / (walls.width * walls.height))
- 
+                matrix[1] = distanceToSecondClosestGhost
+
             if distanceCapsule is not None:
                 DistanceToCapsule = float (distanceCapsule) / ((walls.width * walls.height)^2)
+                matrix[2] = DistanceToCapsule
 
-            if len(PacmanRules.getLegalActions(state)) < 4:
+            if len(state.getLegalActions()) < 4:
                 tunnel = 1.0
-    
+                matrix[3] = tunnel
 
-        matrix = np.zeros(dtype= float, shape = (10,1))
-       
-        matrix[0] = food
-        matrix[1] = distanceToFood
-        matrix[2] = distanceToClostestScaredGhost
-        matrix[3] = scaredGhost1StepAway
-        matrix[4] = distanceToClosestGhost
-        matrix[5] = ghost1StepAway
-        matrix[6] = distanceToSecondClosestGhost
-        matrix[7] = DistanceToCapsule
-        matrix[8] = tunnel
-        matrix[9] = bias
-
-        return matrix 
-
+        if len(scared_ghosts) > 0:
+            distanceToClosestScaredGhost =float (min([manhattanDistance(pacmanPostion, g.getPosition()) for g in scared_ghosts]) / (walls.width * walls.height))
+            matrix[4] = distanceToClosestScaredGhost
+        
+        matrix[5] = foodMatrix
+        matrix[6] = distanceToClosestFoodMatrix
+        matrix[7] = scaredGhost1StepAwayMatrix
+        matrix[8] = ghost1StepAwayMatrix
+        matrix[9] = 1.0
+        
+        return matrix
 
     def registerInitialState(self, state): # inspects the starting state
 
@@ -354,6 +412,5 @@ class deepqlearningAgent(game.Agent):
         legal = state.getLegalActions(0)
         if move not in legal:
             move = Directions.STOP
-
         return move
   
