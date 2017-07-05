@@ -8,6 +8,7 @@ import webbrowser
 #Version 21.06.2017
 
 
+
 class MainWindow:
     counter = 0
 
@@ -206,6 +207,7 @@ class MainWindow:
 class Credits:
 
     def __init__(self):
+        global img
         self.root = Tk()
         self.root.title('Credits')
         self.configureStyle()
@@ -213,7 +215,8 @@ class Credits:
         self.orderLabels()
 
     def createLabels(self):
-        self.lbl_created = Label(self.root, text='Created by:\n\tFleiner, Christian  \n\tGoergen, Konstantin  \n\tJohn, Felix \n\tPickl, Max ' )
+        self.lbl_created = Label(self.root, text='Created by:\n\tFleiner, Christian  \n\tGoergen, Konstantin  \n\tJohn, Felix '
+                                                 '\n\tMichalczyk, Sven \n\tPickl, Max ')
         self.lbl_created.configure(background='black', foreground='green')
 
         self.lbl_opening = Label(self.root, text='Thanks to all Contributors\nof knowledge and source code')
@@ -233,21 +236,21 @@ class Credits:
     def orderLabels(self):
         self.lbl_created.grid(row=1, padx=5, pady = 10)
         self.lbl_opening.grid(row=2, padx=5, pady = 10)
-        self.lbl_bk.label.grid(row=3, padx=5)
-        self.lbl_aifb.label.grid(row=4, padx=5)
+        self.lbl_bk.grid(row=3, padx=5)
+        self.lbl_aifb.grid(row=4, padx=5)
 
     def show(self):
         self.root.mainloop()
 
-class HyperlinkLabel:
+
+class HyperlinkLabel(Label):
     link = ''
 
     def __init__(self, root, text):
-        self.label = Label(root, text=text, cursor='hand2')
-        self.label.configure(background='black', foreground='blue')
-        self.label.bind("<Button-1>", self.openLink)
+        Label.__init__(self, master=root, text=text, cursor='hand2', background='black', foreground='blue')
+        self.bind("<Button-1>", self.openLink)
 
-    def setLink(self,str):
+    def setLink(self, str):
         self.link = str
 
     def openLink(self, event):
