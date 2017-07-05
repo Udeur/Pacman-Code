@@ -38,7 +38,7 @@ params = {
     'save_interval' : 100,
 
     # Training parameters
-    'train_start': 500,    # Episodes before training starts
+    'train_start': 50000,    # Episodes before training starts
     'batch_size': 32,       # Replay memory batch size
     'mem_size': 100000,     # Replay memory size
 
@@ -50,7 +50,7 @@ params = {
     # Epsilon value (epsilon-greedy)
     'eps': 1.0,             # Epsilon start value
     'eps_final': 0.1,       # Epsilon end value
-    'eps_step': 10000       # Epsilon steps between start and end (linear)
+    'eps_step': 1000000       # Epsilon steps between start and end (linear)
 }                     
 
 
@@ -80,6 +80,8 @@ class deepqlearningAgents(game.Agent):
 
         self.replay_mem = deque()
         self.last_scores = deque()
+
+    roundcount = 0
 
 
     def getMove(self, state):
@@ -192,6 +194,9 @@ class deepqlearningAgents(game.Agent):
     def final(self, state):
         # Next
         self.ep_rew += self.last_reward
+        self.roundcount += 1
+        if self.roundcount % 100 == 0:
+            print self.roundcount
 
         # Do observation
         self.terminal = True
@@ -278,7 +283,7 @@ class deepqlearningAgents(game.Agent):
         
         actions = state.getLegalActions()
         x, y = state.getPacmanPosition()
-        print Actions.directionToVector(actions[0])
+
         
         #Matrizen generieren
         matrix = np.zeros(dtype= float, shape = (10,5))
@@ -287,18 +292,19 @@ class deepqlearningAgents(game.Agent):
         scaredGhost1StepAwayMatrix = np.zeros(dtype= float, shape = 5)
         ghost1StepAwayMatrix = np.zeros(dtype= float, shape = 5)
 
-        x1, y1 = Actions.directionToVector(actions[0])
-        next_x1, next_y1 = int(x + x1), int(y + y1)
-        print next_x1, next_y1
-        if food[next_x1][next_y1]:
-            foodMatrix[0] = 1.0
-        distanceFood = self.closestFood((next_x1, next_y1), food, walls)
-        if distanceFood is not None:
-            distanceToClosestFoodMatrix[0] = float(distanceFood) / (walls.width * walls.height)
-        if len(scared_ghosts) > 0:
-                scaredGhost1StepAwayMatrix[0] = sum((next_x1, next_y1) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-        if len(normal_ghosts) > 0:
-             ghost1StepAwayMatrix[0] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)           
+
+        if len(actions) > 0:
+            x1, y1 = Actions.directionToVector(actions[0])
+            next_x1, next_y1 = int(x + x1), int(y + y1)
+            if food[next_x1][next_y1]:
+                foodMatrix[0] = 1.0
+            distanceFood = self.closestFood((next_x1, next_y1), food, walls)
+            if distanceFood is not None:
+                distanceToClosestFoodMatrix[0] = float(distanceFood) / (walls.width * walls.height)
+            if len(scared_ghosts) > 0:
+                    scaredGhost1StepAwayMatrix[0] = sum((next_x1, next_y1) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+            if len(normal_ghosts) > 0:
+                 ghost1StepAwayMatrix[0] = sum((x, y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
           
         if len(actions) > 1:
             x2, y2 = Actions.directionToVector(actions[1])

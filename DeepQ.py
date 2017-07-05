@@ -16,19 +16,18 @@ class DQN:
         #set to five since "stay" is an option
         self.actions = tf.placeholder("float", [None, 5], name=self.network_name + '_actions')
         self.rewards = tf.placeholder("float", [None], name=self.network_name + '_rewards')
-        print "test"
         self.terminals = tf.placeholder("float", [None], name=self.network_name + '_terminals')
+
+        A = 50  #Number of weights
+        B = 50  #Number of Neurons
+        C = 100 #Number of Output Valaues
 
 
         layer_name = 'fc1'
-        self.w1 = tf.Variable(tf.truncated_normal([10, 50], stddev=0.01))
-        self.x_r = tf.reshape(self.x,[-1, 10])
-        self.b1 = tf.Variable(tf.ones([50])/10)
+        self.w1 = tf.Variable(tf.truncated_normal([50, A], stddev=0.01))
+        self.x_r = tf.reshape(self.x,[-1, 50])
+        self.b1 = tf.Variable(tf.ones([A])/10)
         self.y1 = tf.nn.relu(tf.matmul(self.x_r,self.w1 )+self.b1)
-
-        A = 10  #Number of Neurons
-        B = 50  #Number of Neurons
-        C = 100 #Number of Output Valaues
 
 
         layer_name = 'fc2'
@@ -41,7 +40,7 @@ class DQN:
 
         self.w3 = tf.Variable(tf.random_normal([C, 5],stddev=0.01))
         self.b3 = tf.Variable(tf.ones([5])/10)
-        self.y3 = tf.nn.relu(tf.matmul(self.y2, self.w3)+self.b3)
+        self.y3 = tf.add(tf.matmul(self.y2, self.w3),self.b3)
 
 
         # Q,Cost,Optimizer
