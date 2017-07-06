@@ -45,24 +45,24 @@ class DQN:
 
       #Preperations for Connection between input and Output
 
-        layer_name = 'Input'
-        self.w1_simple = tf.Variable(tf.truncated_normal([50, A], stddev=0.01))
-        self.x_r = tf.reshape(self.x,[-1, 50])
-        self.b1_simple = tf.Variable(tf.ones([A])/10)
-        self.y1_simple = tf.nn.relu(tf.matmul(self.x_r,self.w1_simple )+self.b1_simple)
+    #    layer_name = 'Input'
+    #    self.w1_simple = tf.Variable(tf.truncated_normal([50, A], stddev=0.01))
+    #    self.x_r = tf.reshape(self.x,[-1, 50])
+    #    self.b1_simple = tf.Variable(tf.ones([A])/10)
+    #   self.y1_simple = tf.nn.relu(tf.matmul(self.x_r,self.w1_simple )+self.b1_simple)
 
 
         layer_name = 'Output'
 
-        self.w2_simple = tf.Variable(tf.random_normal([50, 5],stddev=0.01))
-        self.b2_simple = tf.Variable(tf.ones([5])/10)
-        self.y2_simple = tf.add(tf.matmul(self.y1_simple, self.w2_simple),self.b2_simple)
+     #   self.w2_simple = tf.Variable(tf.random_normal([50, 5],stddev=0.01))
+     #   self.b2_simple = tf.Variable(tf.ones([5])/10)
+     #   self.y2_simple = tf.add(tf.matmul(self.y1_simple, self.w2_simple),self.b2_simple)
 
 
         # Q,Cost,Optimizer line 65 argument tf.multiply has either input self.y2_sipmle or self.y3
         self.discount = tf.constant(self.params['discount'])
         self.yj = tf.add(self.rewards, tf.multiply(1.0 - self.terminals, tf.multiply(self.discount, self.q_t)))
-        self.Q_pred = tf.reduce_sum(tf.multiply(self.y2_simple, self.actions), reduction_indices=1)
+        self.Q_pred = tf.reduce_sum(tf.multiply(self.y3, self.actions), reduction_indices=1)
         self.cost = tf.reduce_sum(tf.pow(tf.subtract(self.yj, self.Q_pred), 2))
 
         if self.params['load_file'] is not None:
