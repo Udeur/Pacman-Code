@@ -23,6 +23,9 @@ class DQN:
         C = 25 #Number of Output Valaues
 
 
+
+        #Netz so angepasst, wie gestern besprochen mit abnehmender Neuronenanzahl; Jetzt: Erst 50 Neuronen, dann 25 dann 5 Output Values
+
         layer_name = 'fc1'
         self.w1 = tf.Variable(tf.truncated_normal([50, A], stddev=0.01))
         self.x_r = tf.reshape(self.x,[-1, 50])
@@ -52,7 +55,7 @@ class DQN:
     #   self.y1_simple = tf.nn.relu(tf.matmul(self.x_r,self.w1_simple )+self.b1_simple)
 
 
-        layer_name = 'Output'
+     #   layer_name = 'Output'
 
      #   self.w2_simple = tf.Variable(tf.random_normal([50, 5],stddev=0.01))
      #   self.b2_simple = tf.Variable(tf.ones([5])/10)
