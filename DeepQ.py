@@ -24,7 +24,6 @@ class DQN:
         C = 5   #Number of Output Valaues
 
 
-
         #Netz so angepasst, wie gestern besprochen mit abnehmender Neuronenanzahl; Jetzt: Erst 30 Neuronen, dann 20 dann 5 Output Values
 
         layer_name = 'fc1'
