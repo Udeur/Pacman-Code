@@ -89,7 +89,7 @@ class deepqlearningAgents(game.Agent):
         if np.random.rand() > self.params['eps']:
             # Exploit action
             self.Q_pred = self.qnet.sess.run(
-                self.qnet.y3,
+                self.qnet.y_output,
 
 
                 feed_dict = {self.qnet.x: np.reshape(self.current_state, (1,10, 5)),
