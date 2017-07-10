@@ -37,7 +37,7 @@ class DQN:
 
         self.w2 = tf.Variable(tf.random_normal([A, B], stddev=0.01))
         self.b2 = tf.Variable(tf.ones([B])/10)
-        self.y2 = tf.nn.relu(tf.matmul(self.y1, self.w2)+self.b2)
+        self.y2 = tf.nn.sigmoid(tf.matmul(self.y1, self.w2)+self.b2)
 
         layer_name = 'fc3'
 
