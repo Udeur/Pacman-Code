@@ -35,7 +35,7 @@ class DQN:
         # Q,Cost,Optimizer line 65 argument tf.multiply has either input self.y2_sipmle or self.y3
         self.discount = tf.constant(self.params['discount'])
         self.yj = tf.add(self.rewards, tf.multiply(1.0 - self.terminals, tf.multiply(self.discount, self.q_t)))
-        self.Q_pred = tf.reduce_sum(tf.multiply(self.y1, self.actions), reduction_indices=1)
+        self.Q_pred = tf.reduce_sum(tf.multiply(self.y1_simple, self.actions), reduction_indices=1)
         self.cost = tf.reduce_sum(tf.pow(tf.subtract(self.yj, self.Q_pred), 2))
 
         if self.params['load_file'] is not None:
@@ -58,7 +58,7 @@ class DQN:
     def train(self, bat_s, bat_a, bat_t, bat_n, bat_r):
         feed_dict = {self.x: bat_n, self.q_t: np.zeros(bat_n.shape[0]), self.actions: bat_a, self.terminals: bat_t,
                      self.rewards: bat_r}
-        q_t = self.sess.run(self.y1, feed_dict=feed_dict)
+        q_t = self.sess.run(self.y1_simple, feed_dict=feed_dict)
         q_t = np.amax(q_t, axis=1)
         feed_dict = {self.x: bat_s, self.q_t: q_t, self.actions: bat_a, self.terminals: bat_t, self.rewards: bat_r}
         _, cnt, cost = self.sess.run([self.rmsprop, self.global_step, self.cost], feed_dict=feed_dict)
