@@ -49,9 +49,9 @@ class DQN:
 
         # Q,Cost,Optimizer line 65 argument tf.multiply has either input self.y2_sipmle or self.y_output
         self.discount = tf.constant(self.params['discount'])
-        self.yj = tf.add(self.rewards, tf.multiply(1.0 - self.terminals, tf.multiply(self.discount, self.q_t)))
+        self.yj = tf.add(self.rewards, tf.multiply(1.0 - self.terminals, tf.multiply(self.discount, self.q_t))) #Neuer Wahrer Wert
         self.Q_pred = tf.reduce_sum(tf.multiply(self.y_output, self.actions), reduction_indices=1)
-        self.cost = tf.reduce_sum(tf.pow(tf.subtract(self.yj, self.Q_pred), 2))
+        self.cost = tf.reduce_sum(tf.pow(tf.subtract(self.yj, self.Q_pred), 2)) #Squared Error Ohne Mean da egal für Optimierung
 
         if self.params['load_file'] is not None:
             self.global_step = tf.Variable(int(self.params['load_file'].split('_')[-1]), name='global_step',
@@ -69,6 +69,7 @@ class DQN:
         if self.params['load_file'] is not None:
             print('Loading checkpoint...')
             self.saver.restore(self.sess, self.params['load_file'])
+           # self.params['load_file']= None # nach erstmaligem Ausführen kein Laden mehr?
 
     def train(self, bat_s, bat_a, bat_t, bat_n, bat_r):
         feed_dict = {self.x: bat_n, self.q_t: np.zeros(bat_n.shape[0]), self.actions: bat_a, self.terminals: bat_t,

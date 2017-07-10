@@ -33,9 +33,9 @@ from DeepQ import *
 
 params = {
     # Model backups
-    'load_file': None,
-    'save_file': True,
-    'save_interval' : 100,
+    'load_file': None, #Name von Datei inklusive Pfade von Projektordner aus, bei None kein Import
+    'save_file': True, #True or False
+    'save_interval' : 10,
 
     # Training parameters
     'train_start': 50000,    # Episodes before training starts
@@ -170,15 +170,14 @@ class deepqlearningAgents(game.Agent):
                 self.replay_mem.popleft()
 
             # Save model
-   # if(params['save_file']):
-        if self.local_cnt > self.params['train_start'] and self.local_cnt % self.params['save_interval'] == 0:
-            if self.local_cnt% 100 ==0:
+        if(params['save_file']):
+             if self.local_cnt > self.params['train_start']:
+                if self.local_cnt % self.params['save_interval'] == 0:
+                    self.qnet.save_ckpt('saves/model-' + "_" + str(self.cnt) + '_' + str(self.numeps))
+                    print('Model saved')
 
-                self.qnet.save_ckpt('saves/model-' + "_" + str(self.cnt) + '_' + str(self.numeps))
-                print('Model saved')
-
-         #Train
-            self.train()
+     #Train
+        self.train()
 
         # Next
         self.local_cnt += 1
