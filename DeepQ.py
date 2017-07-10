@@ -18,48 +18,34 @@ class DQN:
         self.rewards = tf.placeholder("float", [None], name=self.network_name + '_rewards')
         self.terminals = tf.placeholder("float", [None], name=self.network_name + '_terminals')
 
-        A = 50  #Number of weights
-        B = 50  #Number of Neurons
-        C = 25 #Number of Output Valaues
+        I = 50  #Number of Input Values (hier: 10*5)
+        A = 30  #Number of Neurons first Layer
+        B = 20  #Number of Neurons second Layer
+        C = 5   #Number of Output Valaues
 
 
 
-        #Netz so angepasst, wie gestern besprochen mit abnehmender Neuronenanzahl; Jetzt: Erst 50 Neuronen, dann 25 dann 5 Output Values
+        #Netz so angepasst, wie gestern besprochen mit abnehmender Neuronenanzahl; Jetzt: Erst 30 Neuronen, dann 20 dann 5 Output Values
 
         layer_name = 'fc1'
-        self.w1 = tf.Variable(tf.truncated_normal([50, A], stddev=0.01))
-        self.x_r = tf.reshape(self.x,[-1, 50])
+        self.w1 = tf.Variable(tf.truncated_normal([I, A], stddev=0.01))
+        self.x_r = tf.reshape(self.x,[-1, I])
         self.b1 = tf.Variable(tf.ones([A])/10)
-        self.y1 = tf.nn.relu(tf.matmul(self.x_r,self.w1 )+self.b1)
+        self.y1 = tf.nn.sigmoid(tf.matmul(self.x_r,self.w1 )+self.b1)
 
 
         layer_name = 'fc2'
 
-        self.w2 = tf.Variable(tf.random_normal([B, 25], stddev=0.01))
-        self.b2 = tf.Variable(tf.ones([25])/10)
+        self.w2 = tf.Variable(tf.random_normal([A, B], stddev=0.01))
+        self.b2 = tf.Variable(tf.ones([B])/10)
         self.y2 = tf.nn.relu(tf.matmul(self.y1, self.w2)+self.b2)
 
         layer_name = 'fc3'
 
-        self.w3 = tf.Variable(tf.random_normal([C, 5],stddev=0.01))
-        self.b3 = tf.Variable(tf.ones([5])/10)
+        self.w3 = tf.Variable(tf.random_normal([B, C],stddev=0.01))
+        self.b3 = tf.Variable(tf.ones([C])/10)
         self.y3 = tf.add(tf.matmul(self.y2, self.w3),self.b3)
 
-
-      #Preperations for Connection between input and Output
-
-    #    layer_name = 'Input'
-    #    self.w1_simple = tf.Variable(tf.truncated_normal([50, A], stddev=0.01))
-    #    self.x_r = tf.reshape(self.x,[-1, 50])
-    #    self.b1_simple = tf.Variable(tf.ones([A])/10)
-    #   self.y1_simple = tf.nn.relu(tf.matmul(self.x_r,self.w1_simple )+self.b1_simple)
-
-
-     #   layer_name = 'Output'
-
-     #   self.w2_simple = tf.Variable(tf.random_normal([50, 5],stddev=0.01))
-     #   self.b2_simple = tf.Variable(tf.ones([5])/10)
-     #   self.y2_simple = tf.add(tf.matmul(self.y1_simple, self.w2_simple),self.b2_simple)
 
 
         # Q,Cost,Optimizer line 65 argument tf.multiply has either input self.y2_sipmle or self.y3
