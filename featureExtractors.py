@@ -1,19 +1,17 @@
 # featureExtractors.py
 # --------------------
-# Licensing Information:  You are free to use or extend these projects for
-# educational purposes provided that (1) you do not distribute or publish
-# solutions, (2) you retain this notice, and (3) you provide clear
-# attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
+# Licensing Information:  You are free to use or extend these projects for 
+# educational purposes provided that (1) you do not distribute or publish 
+# solutions, (2) you retain this notice, and (3) you provide clear 
+# attribution to UC Berkeley, including a link to 
+# http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
 # 
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-# The core projects and autograders were primarily created by John DeNero
+# The core projects and autograders were primarily created by John DeNero 
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and
+# Student side autograding was added by Brad Miller, Nick Hay, and 
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
-#Berkeley Features:
-# closeToFood, closeToScaredGhost, closeToGhost, score, closeToPellet, bias, numScaredGhosts
 
 "Feature extractors for Pacman game states"
 
@@ -26,11 +24,6 @@ import numpy as np
 
 class FeatureExtractor:
     def getFeatures(self, state, action):
-        """
-          Returns a dict from features to counts
-          Usually, the count will just be 1.0 for
-          indicator functions.
-        """
         util.raiseNotDefined()
 
 class IdentityExtractor(FeatureExtractor):
@@ -70,12 +63,13 @@ def closestFood(pos, food, walls):
     # no food found
     return None
 
-def DistanceToCapsule(pos, capsules):
+#added
+def distanceToCapsule(pos, capsules):
     for c in capsules:
         distance = [manhattanDistance(pos, c)]
         return min(distance)
-
-def DistancToGhost(pos, ghosts):
+#added
+def distancToGhost(pos, ghosts):
     for g in ghosts:
         distance = [manhattanDistance(pos, g)]
         return min(distance)
@@ -119,70 +113,20 @@ class SimpleExtractor(FeatureExtractor):
         features.divideAll(10.0)
         return features
 
-#added fjohn
-class BetterExtractor:
-    
-    def getFeatures(self, state, action):
-        pacmanPostion = state.getPacmanPosition()
-        capsules = state.getCapsules()
-        distanceCapsule = DistanceToCapsule(pacmanPostion, capsules)
-        food = state.getFood()
-        walls = state.getWalls()
-        ghosts = state.getGhostPositions()
-        ghostStates = state.getGhostStates()
-        capsules = state.getCapsules()
-        distanceToGhost = DistancToGhost(pacmanPostion, ghosts)
-
-        #Location after Pacman takes the action
-        x, y = state.getPacmanPosition()
-        dx, dy = Actions.directionToVector(action)
-        next_x, next_y = int(x + dx), int(y + dy)
-        distanceFood = closestFood((next_x, next_y), food, walls)
-        
-        features = util.Counter()
-        
-        features["Bias"] = 1.0
-
-        for ghost in ghostStates:
-            if ghost.scaredTimer > 0:
-                features["DistanceToGhost"] = float (distanceToGhost) / (walls.width * walls.height)
-                features["ScaredGhost1StepAway"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-                if food[next_x][next_y]:
-                     features["food"] = 1.0
-                if distanceFood is not None:
-                     features["ClosestFood"] = float(distanceFood) / (walls.width * walls.height)
-            else:
-                features["Ghost1StepAway"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
-
-                if distanceCapsule is not None:
-                    features["DistanceToCapsule"] = 1.0 / (float (distanceCapsule))
-                
-                if not features["Ghost1StepAway"] and food[next_x][next_y]:
-                    features["Food"] = 1.0
-                
-                if distanceFood is not None:
-                    features["ClosestFood"] = float(distanceFood) / (walls.width * walls.height)
-
-                if len(PacmanRules.getLegalActions(state)) < 4:
-                    features["Tunnel"] =  1.0
-
-        features.divideAll(10.0)
-        return features
-
-#added fjohn
+#added
 class BestExtractor(FeatureExtractor):
-  
+    
     def getFeatures(self, state, action):
 
         #Grundinformationen
         pacmanPostion = state.getPacmanPosition()
         capsules = state.getCapsules()
-        distanceCapsule = DistanceToCapsule(pacmanPostion, capsules)
+        distanceCapsule = distanceToCapsule(pacmanPostion, capsules)
         food = state.getFood()
         walls = state.getWalls()
         ghosts = state.getGhostPositions()
         ghostStates = state.getGhostStates()
-        
+      
         #Unterteile die Geister 
         scared_ghosts = filter(lambda g: g.scaredTimer > 0, ghostStates)
         normal_ghosts = filter(lambda g: g.scaredTimer == 0, ghostStates)
@@ -191,6 +135,7 @@ class BestExtractor(FeatureExtractor):
         dx, dy = Actions.directionToVector(action)
         next_x, next_y = int(x + dx), int(y + dy)
         distanceFood = closestFood((next_x, next_y), food, walls)
+
         
         #Initialisiere Counter
         features = util.Counter()
@@ -217,9 +162,12 @@ class BestExtractor(FeatureExtractor):
             if len(normal_ghosts) > 1:
                 distanceToSecondClosestGhost = heapq.nsmallest(2, [manhattanDistance(pacmanPostion, g.getPosition()) for g in normal_ghosts])[-1]
                 features["DistanceToClostest2Ghost"] = float (distanceToSecondClosestGhost) / (walls.width * walls.height)
+                #features["DistanceCombination"] = float ((distanceToClosestGhost*distanceToSecondClosestGhost) / (walls.width * walls.height)**2)
+                #print float (distanceToClosestGhost*distanceToSecondClosestGhost)
+                #print features["DistanceCombination"]
 
             if distanceCapsule is not None:
-                features["DistanceToCapsule"] = float (distanceCapsule) / (walls.width * walls.height)
+                features["DistanceToCapsule"] = float (distanceCapsule) / ((walls.width * walls.height)^2)
 
             if not features["Ghost1StepAway"] and food[next_x][next_y]:
                 features["Food"] = 1.0
@@ -231,7 +179,58 @@ class BestExtractor(FeatureExtractor):
                 features["Tunnel"] = 1.0
 
         features.divideAll(10.0)
+        #print features
         return features
+
+#added
+class BetterExtractor(FeatureExtractor):
+    
+   def getFeatures(self, state, action):
+        pacmanPostion = state.getPacmanPosition()
+        capsules = state.getCapsules()
+        distanceCapsule = distanceToCapsule(pacmanPostion, capsules)
+        food = state.getFood()
+        walls = state.getWalls()
+        ghosts = state.getGhostPositions()
+        ghostStates = state.getGhostStates()
+        distanceToGhost = distancToGhost(pacmanPostion, ghosts)
+        #Location after Pacman takes the action
+        x, y = state.getPacmanPosition()
+        dx, dy = Actions.directionToVector(action)
+        next_x, next_y = int(x + dx), int(y + dy)
+        distanceFood = closestFood((next_x, next_y), food, walls)
+       
+        features = util.Counter()
+       
+        features["Bias"] = 1.0
+
+        for ghost in ghostStates:
+            if ghost.scaredTimer > 0:
+                features["DistanceToClostestGhost"] = float (distanceToGhost) / (walls.width * walls.height)
+                features["ScaredGhost1StepAway"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+                if food[next_x][next_y]:
+                    features["Food"] = 1.0
+                if distanceFood is not None:
+                    features["ClosestFood"] = float(distanceFood) / (walls.width * walls.height)
+            else:
+                features["Ghost1StepAway"] = sum((next_x, next_y) in Actions.getLegalNeighbors(g, walls) for g in ghosts)
+
+                if distanceCapsule is not None:
+                    features["DistanceToCapsule"] = 1.0 / (float (distanceCapsule))
+                
+                if not features["Ghost1StepAway"] and food[next_x][next_y]:
+                    features["Food"] = 1.0
+                
+                if distanceFood is not None:
+                    features["ClosestFood"] = float(distanceFood) / (walls.width * walls.height)
+
+                if len(PacmanRules.getLegalActions(state)) < 4:
+                    features["Tunnel"] =  1.0
+
+        features.divideAll(10.0)
+        return features
+
+
 
 
 
