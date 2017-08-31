@@ -93,7 +93,7 @@ class Dqn():
             action = probs.multinomial()
         except:
             #error only triggered few times by 3NN due to function design
-            action = random.choice([0,1,2,3,4])
+            return random.choice([0,1,2,3,4])
 
         return action.data[0,0]
     
