@@ -1,19 +1,3 @@
-# featureExtractors.py
-# --------------------
-# Licensing Information:  You are free to use or extend these projects for 
-# educational purposes provided that (1) you do not distribute or publish 
-# solutions, (2) you retain this notice, and (3) you provide clear 
-# attribution to UC Berkeley, including a link to 
-# http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
-# 
-# Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-# The core projects and autograders were primarily created by John DeNero 
-# (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and 
-# Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
-"Feature extractors for Pacman game states"
 
 from game import Directions, Actions
 from util import manhattanDistance
@@ -63,12 +47,12 @@ def closestFood(pos, food, walls):
     # no food found
     return None
 
-#added
+#added fjohn
 def distanceToCapsule(pos, capsules):
     for c in capsules:
         distance = [manhattanDistance(pos, c)]
         return min(distance)
-#added
+#added fjohn
 def distancToGhost(pos, ghosts):
     for g in ghosts:
         distance = [manhattanDistance(pos, g)]
@@ -113,7 +97,7 @@ class SimpleExtractor(FeatureExtractor):
         features.divideAll(10.0)
         return features
 
-#added
+#added fjohn
 class BestExtractor(FeatureExtractor):
     
     def getFeatures(self, state, action):
@@ -163,8 +147,7 @@ class BestExtractor(FeatureExtractor):
                 distanceToSecondClosestGhost = heapq.nsmallest(2, [manhattanDistance(pacmanPostion, g.getPosition()) for g in normal_ghosts])[-1]
                 features["DistanceToClostest2Ghost"] = float (distanceToSecondClosestGhost) / (walls.width * walls.height)
                 #features["DistanceCombination"] = float ((distanceToClosestGhost*distanceToSecondClosestGhost) / (walls.width * walls.height)**2)
-                #print float (distanceToClosestGhost*distanceToSecondClosestGhost)
-                #print features["DistanceCombination"]
+       
 
             if distanceCapsule is not None:
                 features["DistanceToCapsule"] = float (distanceCapsule) / ((walls.width * walls.height)^2)
@@ -179,10 +162,9 @@ class BestExtractor(FeatureExtractor):
                 features["Tunnel"] = 1.0
 
         features.divideAll(10.0)
-        #print features
         return features
 
-#added
+#added fjohn
 class BetterExtractor(FeatureExtractor):
     
    def getFeatures(self, state, action):
