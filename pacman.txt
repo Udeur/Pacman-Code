@@ -1,3 +1,5 @@
+#pacman.py adjusted vor TensorFlow Deep Q Agent
+
 # pacman.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
