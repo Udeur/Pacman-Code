@@ -96,6 +96,7 @@ class ApproximateQAgent(PacmanQAgent):
         self.featExtractor = util.lookup(extractor, globals())()
         PacmanQAgent.__init__(self, **args)
         self.weights = util.Counter()
+        self.weights = {'DistanceToClostestGhost': 126.60456396130368, 'ClosestFood': -152.99544981031994, 'Bias': 405.421355420597, 'DistanceToClosestScaredGhost': 12.555335840061781, 'DistanceToClostest2Ghost': -59.59943731917117, 'ScaredGhost1StepAway': 1578.2182700200874, 'Food': 234.5011359525439, 'DistanceToCapsule': -140.53879235841436, 'Tunnel': -33.683396107762476, 'Ghost1StepAway': -3780.616407969431}
 
     def getWeights(self):
         return self.weights
