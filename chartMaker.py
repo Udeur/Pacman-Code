@@ -1,3 +1,6 @@
+#Module containing chart creating prototype.
+#Was not used
+
 import numpy as np
 import matplotlib.pyplot as plt
 
