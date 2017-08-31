@@ -1,10 +1,6 @@
 import numpy as np
 import tensorflow as tf
 
-#Laye one and two eliminated
-#se
-
-
 class DQN:
     def __init__(self, params):
         self.params = params
@@ -19,30 +15,25 @@ class DQN:
         print "test"
         self.terminals = tf.placeholder("float", [None], name=self.network_name + '_terminals')
 
-
+        A = 10  #Number of Neurons
+        B = 50  #Number of Neurons
+        C = 100 #Number of Output Valaues
+        
         layer_name = 'fc1'
-        self.w1 = tf.Variable(tf.truncated_normal([10, 50], stddev=0.01))
+        self.w1 = tf.Variable(tf.truncated_normal([A, 50], stddev=0.01))
         self.x_r = tf.reshape(self.x,[-1, 10])
         self.b1 = tf.Variable(tf.ones([50])/10)
         self.y1 = tf.nn.relu(tf.matmul(self.x_r,self.w1 )+self.b1)
 
-        A = 10  #Number of Neurons
-        B = 50  #Number of Neurons
-        C = 100 #Number of Output Valaues
-
-
         layer_name = 'fc2'
-
         self.w2 = tf.Variable(tf.random_normal([B, 100], stddev=0.01))
         self.b2 = tf.Variable(tf.ones([100])/10)
         self.y2 = tf.nn.relu(tf.matmul(self.y1, self.w2)+self.b2)
 
         layer_name = 'fc3'
-
         self.w3 = tf.Variable(tf.random_normal([C, 5],stddev=0.01))
         self.b3 = tf.Variable(tf.ones([5])/10)
         self.y3 = tf.nn.relu(tf.matmul(self.y2, self.w3)+self.b3)
-
 
         # Q,Cost,Optimizer
         self.discount = tf.constant(self.params['discount'])
