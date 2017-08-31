@@ -509,7 +509,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         # print "State", state
         # print 'Goal?', self.food[x][y]
         
-        print "Food?", self.food[x][y]
+     
 
         return self.food[x][y]
         util.raiseNotDefined()
