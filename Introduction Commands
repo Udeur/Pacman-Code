@@ -1,0 +1,30 @@
+This Textfile provides a small introduction to commandline commands, if you do not want to use the GUI.
+
+1. Example
+
+python pacman.py -p TorchAgent1NN -l smallGrid -g DirectionalGhost -n 10 -x 5
+
+Command Line starts pacman environment in the smallGrid maze having the Torchagent as pacman agent and intelligent ghosts. There will be 10 rounds and 5 will be for training(no window).
+
+2. Splitting the elements
+
+
+(python pacman.py)#required	-indicates the game
+
+
+(-p TorchAgent1NN)		- selects agent. Without agent selection, human player is selected
+
+
+(-l smallGrid)			- selects layout. Standard: mediumClassic
+
+
+(-g DirectionalGhost)		- ghost policy. Standard: randomly moving ghosts
+
+
+(-n 10)				- number of overall round. Required only if not human plays.
+
+(-x 5)				- training rounds. pacman plays without opening a window. 
+
+
+
+
