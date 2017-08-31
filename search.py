@@ -105,11 +105,8 @@ def breadthFirstSearch(problem):
     		continue;
 
     	explored.add(helpState)
-        print "Explored", explored
-        print "HelpState", helpState
 
     	if problem.isGoalState(helpState):
-            print "HelpMove", helpMove 
     	    return helpMove
 
     	for state, direction, cost in problem.getSuccessors(helpState):
