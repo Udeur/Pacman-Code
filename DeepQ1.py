@@ -1,9 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-#Laye one and two eliminated
-#se
-
+#DQN: Input and Output Layer directly linked together
 
 class DQN:
     def __init__(self, params):
@@ -19,18 +17,14 @@ class DQN:
         self.terminals = tf.placeholder("float", [None], name=self.network_name + '_terminals')
 
         A = 5  #Number of neurons
-
-
-
-      #Preperations for Connection between input and Output
+      
+        #Preperations for Connection between input and Output
 
         layer_name = 'Input'
         self.w1_simple = tf.Variable(tf.truncated_normal([50, A], stddev=0.01))
         self.x_r = tf.reshape(self.x,[-1, 50])
         self.b1_simple = tf.Variable(tf.ones([A])/10)
         self.y_output = tf.nn.sigmoid(tf.matmul(self.x_r,self.w1_simple )+self.b1_simple)
-
-
 
         # Q,Cost,Optimizer line 65 argument tf.multiply has either input self.y2_sipmle or self.y3
         self.discount = tf.constant(self.params['discount'])
