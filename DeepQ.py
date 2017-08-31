@@ -1,9 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-#Laye one and two eliminated
-#se
-
+#DQN with decreasing number of neurons
 
 class DQN:
     def __init__(self, params):
@@ -23,29 +21,21 @@ class DQN:
         B = 20  #Number of Neurons second Layer
         C = 5   #Number of Output Valaues
 
-
-        #Netz so angepasst, wie gestern besprochen mit abnehmender Neuronenanzahl; Jetzt: Erst 30 Neuronen, dann 20 dann 5 Output Values
-
         layer_name = 'fc1'
         self.w1 = tf.Variable(tf.truncated_normal([I, A], stddev=0.01))
         self.x_r = tf.reshape(self.x,[-1, I])
         self.b1 = tf.Variable(tf.ones([A])/10)
         self.y1 = tf.nn.sigmoid(tf.matmul(self.x_r,self.w1 )+self.b1)
 
-
         layer_name = 'fc2'
-
         self.w2 = tf.Variable(tf.random_normal([A, B], stddev=0.01))
         self.b2 = tf.Variable(tf.ones([B])/10)
         self.y2 = tf.nn.sigmoid(tf.matmul(self.y1, self.w2)+self.b2)
 
         layer_name = 'fc3'
-
         self.w3 = tf.Variable(tf.random_normal([B, C],stddev=0.01))
         self.b3 = tf.Variable(tf.ones([C])/10)
         self.y_output = tf.add(tf.matmul(self.y2, self.w3),self.b3)
-
-
 
         # Q,Cost,Optimizer line 65 argument tf.multiply has either input self.y2_sipmle or self.y_output
         self.discount = tf.constant(self.params['discount'])
