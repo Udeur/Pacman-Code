@@ -469,8 +469,6 @@ class ClosestDotSearchAgent(SearchAgent):
         # print "Search", search.bfs(problem)
         # print "Postion Pacman", gameState.getPacmanPosition()
         # print "BFS Search:" , search.bfs(problem)
-        print "search.bfs"
-        print search.bfs(problem)
 
         return search.bfs(problem)
         util.raiseNotDefined()
