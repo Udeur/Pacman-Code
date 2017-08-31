@@ -26,5 +26,8 @@ Command Line starts pacman environment in the smallGrid maze having the Torchage
 (-x 5)				- training rounds. pacman plays without opening a window. 
 
 
+3. If you want to use the GUI:  python gui.py
+
+
 
 
