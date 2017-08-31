@@ -1,3 +1,8 @@
+#Module containing text file class
+# class can be used to write any information in a textfile
+# class can be used to import exact information of Berkley state instance
+# Is used for evalution. Not needed for execution
+
 import os, util
 from game import GameStateData
 from pacman import GameState
