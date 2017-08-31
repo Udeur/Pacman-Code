@@ -203,16 +203,6 @@ class deepqlearningAgents(game.Agent):
         self.terminal = True
         self.observation_step(state)
 
-        # Print stats
-        #log_file = open('./logs/'+str(self.general_record_time)+'-l-'+str(self.params['width'])+'-m-'+str(self.params['height'])+'-x-'+str(self.params['num_training'])+'.log','a')
-        #log_file.write("# %4d | steps: %5d | steps_t: %5d | t: %4f | r: %12f | e: %10f " %
-        #                  (self.numeps,self.local_cnt, self.cnt, time.time()-self.s, self.ep_rew, self.params['eps']))
-        #log_file.write("| Q: %10f | won: %r \n" % ((max(self.Q_global, default=float('nan')), self.won)))
-        #sys.stdout.write("# %4d | steps: %5d | steps_t: %5d | t: %4f | r: %12f | e: %10f " %
-        #                 (self.numeps,self.local_cnt, self.cnt, time.time()-self.s, self.ep_rew, self.params['eps']))
-        #sys.stdout.write("| Q: %10f | won: %r \n" % ((max(self.Q_global, default=float('nan')), self.won)))
-        #sys.stdout.flush()
-
     def train(self):
         # Train
         if (self.local_cnt > self.params['train_start']):
@@ -244,7 +234,8 @@ class deepqlearningAgents(game.Agent):
         for i in range(len(actions)):                                           
             actions_onehot[i][int(actions[i])] = 1      
         return actions_onehot   
-
+    
+    #added fjohn
     def closestFood(self, pos, food, walls):
    
         fringe = [(pos[0], pos[1], 0)]
@@ -268,7 +259,8 @@ class deepqlearningAgents(game.Agent):
         for c in capsules:
             distance = [manhattanDistance(pos, c)]
             return min(distance)
-
+ 
+    #Features als Input fuer das Neuronale Netz
     def getStatesFeatureMatrix(self, state):
         pacmanPostion = state.getPacmanPosition()
         capsules = state.getCapsules()
@@ -293,7 +285,7 @@ class deepqlearningAgents(game.Agent):
         scaredGhost1StepAwayMatrix = np.zeros(dtype= float, shape = 5)
         ghost1StepAwayMatrix = np.zeros(dtype= float, shape = 5)
 
-
+        #abhaengig von der anzahl der moeglichen moves fuer gegebenen state
         if len(actions) > 0:
             x1, y1 = Actions.directionToVector(actions[0])
             next_x1, next_y1 = int(x + x1), int(y + y1)
@@ -391,33 +383,26 @@ class deepqlearningAgents(game.Agent):
 
     def registerInitialState(self, state): # inspects the starting state
 
-        # Reset reward
         self.last_score = 0
         self.current_score = 0
         self.last_reward = 0.
         self.ep_rew = 0
-
-        # Reset state
+        
         self.last_state = None
         self.current_state = self.getStatesFeatureMatrix(state)
 
-        # Reset actions
         self.last_action = None
 
-        # Reset vars
         self.terminal = None
         self.won = True
         self.Q_global = []
         self.delay = 0
-
-        # Next
+        
         self.frame = 0
         self.numeps += 1
 
     def getAction(self, state):
         move = self.getMove(state)
-
-        # Stop moving when not legal
         legal = state.getLegalActions(0)
         if move not in legal:
             move = Directions.STOP
